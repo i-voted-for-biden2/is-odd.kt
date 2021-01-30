@@ -1,5 +1,7 @@
+import me.schlaubi.is_odd.TypeError
 import me.schlaubi.is_odd.isOdd
 import kotlin.test.Test
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -18,13 +20,7 @@ class IsOddTest {
     }
 
     @Test
-    fun testFloatingPoint() {
-        assertFalse(isOdd(2F), "Floats aren't integers")
-        assertFalse(isOdd(Float.MAX_VALUE), "Floats aren't integers")
-    }
-
-    @Test
     fun testNonNumber() {
-        assertFalse(isOdd("bruh moment"), "Strings aren't integers")
+        assertFailsWith<TypeError>("Strings aren't integers") { isOdd("bruh moment") }
     }
 }

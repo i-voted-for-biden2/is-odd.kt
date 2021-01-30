@@ -26,3 +26,6 @@ Gradle:
         }    
     }
 ```
+
+# Documentation
+Docs can be found here: https://isodd.schlau.bi/is-odd

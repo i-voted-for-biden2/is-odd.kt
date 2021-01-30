@@ -1,5 +1,6 @@
 plugins {
     kotlin("multiplatform") version "1.4.21"
+    id("org.jetbrains.dokka") version "1.4.20"
     `maven-publish`
 }
 
@@ -85,8 +86,14 @@ kotlin {
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
     }
 
-    
+
     sourceSets {
+        commonMain {
+            repositories {
+                jcenter()
+            }
+        }
+
         commonTest {
             dependencies {
                 implementation(kotlin("test-common"))
@@ -120,6 +127,23 @@ kotlin {
 
         val nativeMain by getting {
             dependsOn(nonJs)
+        }
+    }
+}
+
+tasks {
+    dokkaHtml {
+        outputDirectory.set(file("docs"))
+
+        dokkaSourceSets {
+            configureEach {
+                includeNonPublic.set(false)
+
+                perPackageOption {
+                    matchingRegex.set(".*\\.internal.*") // will match all .internal packages and sub-packages
+                    suppress.set(true)
+                }
+            }
         }
     }
 }
