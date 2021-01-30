@@ -1,13 +1,60 @@
 plugins {
     kotlin("multiplatform") version "1.4.21"
+    `maven-publish`
 }
 
 group = "me.schlaubi"
-version = "1.0-SNAPSHOT"
+version = "1.0"
 
 repositories {
     mavenCentral()
 }
+
+publishing {
+    repositories {
+        maven {
+            setUrl("https://api.bintray.com/maven/drschlaubi/maven/is-odd.kt;publish=1;override=0")
+
+            credentials {
+                username = System.getenv("BINTRAY_USER")
+                password = System.getenv("BINTRAY_KEY")
+            }
+        }
+    }
+
+    publications {
+        filterIsInstance<MavenPublication>().forEach { publication ->
+            publication.pom {
+                name.set(project.name)
+                description.set("Kotlin port and bindings for very popular JavaScript library is-odd\n" +
+                        "\n")
+                url.set("https://github.com/DRSchlaubi/is-odd.kt")
+
+                licenses {
+                    license {
+                        name.set("MIT License")
+                        url.set("https://github.com/DRSchlaubi/is-odd.kt/blob/main/LICENSE")
+                    }
+                }
+
+                developers {
+                    developer {
+                        name.set("Michael Rittmeister")
+                        email.set("mail@schlaubi.me")
+                        organizationUrl.set("https://michael.rittmeister.in")
+                    }
+                }
+
+                scm {
+                    connection.set("scm:git:https://github.com/DRSchlaubi/lavakord.git")
+                    developerConnection.set("scm:git:https://github.com/DRSchlaubi/lavakord.git")
+                    url.set("https://github.com/DRSchlaubi/lavakord")
+                }
+            }
+        }
+    }
+}
+
 
 kotlin {
     jvm {
