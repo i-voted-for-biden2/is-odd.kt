@@ -4,6 +4,9 @@ import kotlin.math.ceil
 
 class TypeError(message: String) : Throwable(message)
 
+internal const val MAX_SAFE_INTEGER = 9007199254740991L
+internal const val MIN_SAFE_INTEGER = -9007199254740991L
+
 internal fun isOdd(input: Any?): Boolean = when (input) {
     !is Number -> throw TypeError("expected a number")
     else -> {
