@@ -8,7 +8,7 @@ Kotlin/JS introduced a cool thing to Kotlin which we were all missing before. Th
 - On all Kotlin/JVM and Kotlin/Native this uses its own implementation: [IsOdd.kt](https://github.com/DRSchlaubi/is-odd.kt/blob/main/src/nonJs/kotlin/me/schlaubi/is_odd/internal/kotlin/IsOdd.kt)
 
 # Usage
-The library is hosted on [Bintray](https://bintray.com/beta/#/drschlaubi/maven/is-odd.kt/1.0?tab=overview)
+The library is hosted on [Bintray](https://bintray.com/beta/#/drschlaubi/maven/is-odd.kt?tab=overview)
 
 Gradle:
 ```kotlin
@@ -20,7 +20,7 @@ Gradle:
                 }
                 
                 dependencies {
-                    implementation("me.schlaubi", "is-odd", "1.0.0")
+                    implementation("me.schlaubi", "is-odd", "1.1")
                 }
             }
         }    
