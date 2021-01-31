@@ -1,18 +1,20 @@
 package me.schlaubi.is_odd.internal.kotlin
 
+import kotlin.math.ceil
+
 class TypeError(message: String) : Throwable(message)
 
-internal fun isOdd(input: Any?): Boolean {
-    return when (input) {
-        is Long -> {
-            if (input !in -9007199254740991L..9007199254740991L) {
-                throw Error("value exceeds maximum safe integer")
-            }
+internal fun isOdd(input: Any?): Boolean = when (input) {
+    !is Number -> throw TypeError("expected a number")
+    else -> {
+        val double = input.toDouble()
+        if (ceil(double) != double) throw Error("expected an integer")
 
-            (input and 1) == 1L
+        val longValue = input.toLong()
+        if (longValue !in -9007199254740991L..9007199254740991L) {
+            throw Error("value exceeds maximum safe integer")
         }
-        is Int -> (input and 1) == 1
-        !is Number -> throw TypeError("Expected an integer")
-        else -> throw Error("Exceeds max integer")
+
+        (input.toLong() % 2) == 1L
     }
 }
