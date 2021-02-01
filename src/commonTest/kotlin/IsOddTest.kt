@@ -1,11 +1,6 @@
-import me.schlaubi.is_odd.MAX_SAFE_INTEGER
-import me.schlaubi.is_odd.MIN_SAFE_INTEGER
 import me.schlaubi.is_odd.TypeError
 import me.schlaubi.is_odd.isOdd
-import kotlin.test.Test
-import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
+import kotlin.test.*
 
 class IsOddTest {
 
@@ -33,5 +28,22 @@ class IsOddTest {
     @Test
     fun testNonNumber() {
         assertFailsWith<TypeError>("Strings aren't integers") { isOdd("bruh moment") }
+    }
+
+    @Test
+    fun strings() {
+        assertTrue(isOdd("1"))
+        assertTrue(isOdd("1.0"))
+        assertTrue(isOdd("3.0"))
+
+        assertFailsWith<Error> { isOdd("1.1") }
+        assertFailsWith<Error> { isOdd("3.3") }
+    }
+
+    @Test
+    fun eventStrings() {
+        assertFalse(isOdd("2"))
+        assertFalse(isOdd("2.0"))
+        assertFalse(isOdd("4.0"))
     }
 }
