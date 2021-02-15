@@ -14,7 +14,7 @@ repositories {
 publishing {
     repositories {
         maven {
-            setUrl("https://api.bintray.com/maven/drschlaubi/maven/is-odd.kt;publish=1;override=0")
+            setUrl("https://schlaubi.jfrog.io/artifactory/is-odd")
 
             credentials {
                 username = System.getenv("BINTRAY_USER")

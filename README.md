@@ -16,11 +16,11 @@ Gradle:
         sourceSets {
             commonMain {
                 repositories {
-                    maven("https://dl.bintray.com/drschlaubi/maven")
+                    maven("https://schlaubi.jfrog.io/artifactory/is-odd")
                 }
                 
                 dependencies {
-                    implementation("me.schlaubi", "is-odd", "1.1")
+                    implementation("me.schlaubi", "is-odd", "1.2")
                 }
             }
         }    
