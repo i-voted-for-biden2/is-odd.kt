@@ -19,6 +19,8 @@ repositories {
 
 mavenPublishing {
     configure(KotlinMultiplatform(JavadocJar.Dokka("dokkaGenerateHtml")))
+    signAllPublications()
+    publishToMavenCentral(automaticRelease = true)
 
     pom {
         name = project.name
