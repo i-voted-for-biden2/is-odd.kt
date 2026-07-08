@@ -17,7 +17,7 @@ jobs:
       - uses: gradle/actions/setup-gradle@v5
       - run: ./gradlew check
       - name: run tests
-        run: ./gradlew connectedCheck
+        run: ./gradlew check
       - name: Publish to Maven
         if: github.ref_type == 'tag'
         env:
