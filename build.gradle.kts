@@ -1,148 +1,136 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
+import com.vanniktech.maven.publish.JavadocJar
+import com.vanniktech.maven.publish.KotlinMultiplatform
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+
 plugins {
-    kotlin("multiplatform") version "1.4.31"
-    id("org.jetbrains.dokka") version "1.4.20"
-    `maven-publish`
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.dokka)
+    alias(libs.plugins.maven.publish)
 }
 
-group = "me.schlaubi"
-version = "1.2"
+group = "dev.schlaubi"
+version = "2.0.0"
 
 repositories {
     mavenCentral()
 }
 
-publishing {
-    repositories {
-        maven {
-            setUrl("https://schlaubi.jfrog.io/artifactory/is-odd")
+mavenPublishing {
+    configure(KotlinMultiplatform(JavadocJar.Dokka("dokkaGenerateHtml")))
+    signAllPublications()
+    publishToMavenCentral(automaticRelease = true)
 
-            credentials {
-                username = System.getenv("BINTRAY_USER")
-                password = System.getenv("BINTRAY_KEY")
+    pom {
+        name = project.name
+        description = "Kotlin port and bindings for very popular JavaScript library is-odd"
+        url = "https://github.com/DRSchlaubi/is-odd.kt"
+
+        licenses {
+            license {
+                name = "MIT License"
+                url = "https://github.com/DRSchlaubi/is-odd.kt/blob/main/LICENSE"
             }
         }
-    }
 
-    publications {
-        filterIsInstance<MavenPublication>().forEach { publication ->
-            publication.pom {
-                name.set(project.name)
-                description.set("Kotlin port and bindings for very popular JavaScript library is-odd\n" +
-                        "\n")
-                url.set("https://github.com/DRSchlaubi/is-odd.kt")
-
-                licenses {
-                    license {
-                        name.set("MIT License")
-                        url.set("https://github.com/DRSchlaubi/is-odd.kt/blob/main/LICENSE")
-                    }
-                }
-
-                developers {
-                    developer {
-                        name.set("Michael Rittmeister")
-                        email.set("mail@schlaubi.me")
-                        organizationUrl.set("https://michael.rittmeister.in")
-                    }
-                }
-
-                scm {
-                    connection.set("scm:git:https://github.com/DRSchlaubi/lavakord.git")
-                    developerConnection.set("scm:git:https://github.com/DRSchlaubi/lavakord.git")
-                    url.set("https://github.com/DRSchlaubi/lavakord")
-                }
+        developers {
+            developer {
+                name = "Michael Rittmeister"
+                email = "mail@schlaubi.me"
+                organizationUrl = "https://michael.rittmeister.in"
             }
+        }
+
+        scm {
+            connection = "scm:git:https://github.com/DRSchlaubi/lavakord.git"
+            developerConnection = "scm:git:https://github.com/DRSchlaubi/lavakord.git"
+            url = "https://github.com/DRSchlaubi/lavakord"
         }
     }
 }
 
-
 kotlin {
-    jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-        testRuns["test"].executionTask.configure {
-            useJUnit()
+    applyDefaultHierarchyTemplate {
+        common {
+            group("nonJs") {
+                withJvm()
+                group("native")
+            }
         }
     }
-    js(BOTH) {
+
+    jvm {
+        testRuns.configureEach {
+            executionTask.configure {
+                useJUnitPlatform()
+            }
+        }
+    }
+    js {
         browser {
             testTask {
                 useKarma {
                     useChromeHeadless()
-                    webpackConfig.cssSupport.enabled = true
                 }
             }
         }
         nodejs()
     }
-    val hostOs = System.getProperty("os.name")
-    val isMingwX64 = hostOs.startsWith("Windows")
-    val nativeTarget = when {
-        hostOs == "Mac OS X" -> macosX64("native")
-        hostOs == "Linux" -> linuxX64("native")
-        isMingwX64 -> mingwX64("native")
-        else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-    }
+    mingwX64()
 
+    linuxX64()
+    linuxArm64()
+
+    macosArm64()
+
+    iosArm64()
+    iosSimulatorArm64()
+
+    watchosArm32()
+    watchosArm64()
+    watchosSimulatorArm64()
+
+    tvosArm64()
+    tvosSimulatorArm64()
 
     sourceSets {
-        commonMain {
-            repositories {
-                jcenter()
-            }
+        dependencies {
+            testImplementation(kotlin("test-common"))
+            testImplementation(kotlin("test-annotations-common"))
         }
 
-        commonTest {
+        jvmTest {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                implementation(kotlin("test-junit5"))
             }
         }
 
-        val nonJs = create("nonJs")
-
-        val jvmMain by getting {
-            dependsOn(nonJs)
-        }
-
-        val jvmTest by getting {
+        jsMain {
             dependencies {
-                implementation(kotlin("test-junit"))
+                implementation(npm("is-odd", libs.versions.`is`.odd.get()))
             }
         }
 
-        val jsMain by getting {
-            dependencies {
-                implementation(npm("is-odd", "3.0.1"))
-            }
-        }
-
-        val jsTest by getting {
+        jsTest {
             dependencies {
                 implementation(kotlin("test-js"))
             }
         }
+    }
 
-        val nativeMain by getting {
-            dependsOn(nonJs)
-        }
+    compilerOptions {
+        freeCompilerArgs.add("-Xexpect-actual-classes")
     }
 }
 
-tasks {
-    dokkaHtml {
-        outputDirectory.set(file("docs"))
+dokka {
+    dokkaSourceSets {
+        configureEach {
 
-        dokkaSourceSets {
-            configureEach {
-                includeNonPublic.set(false)
-
-                perPackageOption {
-                    matchingRegex.set(".*\\.internal.*") // will match all .internal packages and sub-packages
-                    suppress.set(true)
-                }
+            perPackageOption {
+                matchingRegex.set(".*\\.internal.*") // will match all .internal packages and sub-packages
+                suppress.set(true)
             }
         }
     }
